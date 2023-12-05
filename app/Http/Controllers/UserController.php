@@ -60,4 +60,34 @@ class UserController extends Controller
             'data' => []
         ];
     }
+
+    public function updateUser(Request $request)
+    {
+        if (!empty($request->email)) {
+            $user = User::where('email', $request->email)->first();
+        } else {
+            $user = User::where('id', $request->id)->first();
+        }
+
+        if(!empty($user)) {
+            try {
+                $user->name = $request->name;
+                $user->email = $request->email;
+                $user->password = Hash::make($request->password);
+                $user->save();
+
+                return [
+                    'status' => Response::HTTP_OK,
+                    'message' => "Success",
+                    'data' => $user
+                ];
+            } catch (\Exception $e) {
+                return [
+                    'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
+                    'message' => $e->getMessage(),
+                    'data' => []
+                ];
+            }
+        }
+    }
 }

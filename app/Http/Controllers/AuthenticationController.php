@@ -10,29 +10,37 @@ use Illuminate\Validation\ValidationException;
 
 class AuthenticationController extends Controller
 {
-    public function login (Request $request){
+    public function login(Request $request)
+    {
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        $email = $request->email;
+        $password = $request->password;
 
-        if(! $user || ! Hash::check($request->password, $user->password)){
-            throw ValidationException::withMessages([
-                'email' => ['the provided credentials are incorrect']
-            ]);
+        $user = User::where('email', $email)->first();
+
+        if (!$user) {
+            return response()->json(['error' => 'The email has not been registered'], 422);
+        }
+
+        if (!Hash::check($password, $user->password)) {
+            return response()->json(['error' => 'Password is wrong'], 422);
         }
 
         return $user->createToken('user login')->plainTextToken;
 
     }
 
-    public function logout(Request $request){
+    public function logout(Request $request)
+    {
         $request->user()->currentAccessToken()->delete();
     }
 
-    public function logininfo(Request $request){
-        return response() -> json(Auth::user());
+    public function logininfo(Request $request)
+    {
+        return response()->json(Auth::user());
     }
 }

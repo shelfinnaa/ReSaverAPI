@@ -27,4 +27,5 @@ Route::post('login', [AuthenticationController::class, 'login']);
 Route::post('createuser', [UserController::class, 'createUser']);
 Route::delete('deleteuser', [UserController::class, 'deleteUser']);
 Route::get('logout', [AuthenticationController::class, 'logout'])->middleware(['auth:sanctum']);
+Route::patch('updateuser', [UserController::class, 'updateUser'])->middleware(['auth:sanctum']);
 Route::get('logininfo', [AuthenticationController::class, 'logininfo'])->middleware(['auth:sanctum']);
