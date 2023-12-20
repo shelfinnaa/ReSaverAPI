@@ -42,4 +42,11 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function categories()
+{
+    return $this->belongsToMany(Category::class, 'category_user')
+        ->withPivot('budget')
+        ->withTimestamps();
+}
 }
