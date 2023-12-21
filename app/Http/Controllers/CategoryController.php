@@ -32,10 +32,19 @@ private function setBudget(Request $request, $categoryId, $inputKey)
         $inputKey => 'required|numeric',
     ]);
 
-    // Add or update the budget for the specified category
-    $user->categories()->attach($categoryId, ['budget' => $request->input($inputKey)]);
+    $existingBudget = $user->categories()->find($categoryId);
 
-    return response()->json(['message' => 'Budget updated successfully']);
+    if ($existingBudget) {
+        // Update the existing budget
+        $existingBudget->pivot->update(['budget' => $request->input($inputKey)]);
+        return response()->json(['message' => 'Budget updated successfully']);
+    } else {
+        // Attach a new budget for the specified category
+        $user->categories()->attach($categoryId, ['budget' => $request->input($inputKey)]);
+        return response()->json(['message' => 'Budget set successfully']);
+    }
+
+
 }
 
 
