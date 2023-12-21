@@ -52,9 +52,26 @@ class ExpenseController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Expense $expense)
+    public function show(Request $request)
     {
-        //
+        $request->validate([
+            'month' => 'required|date_format:Y-m', // Validate the input format as 'YYYY-MM'
+        ]);
+
+        $user = auth()->user();
+        $month = $request->input('month');
+
+        // Fetch all expenses for the specified month
+        $expenses = Expense::where('user_id', $user->id)
+            ->whereYear('date', '=', substr($month, 0, 4)) // Extract the year from 'YYYY-MM'
+            ->whereMonth('date', '=', substr($month, 5, 2)) // Extract the month from 'YYYY-MM'
+            ->get();
+
+        if ($expenses->isEmpty()) {
+            return response()->json(['message' => 'No expenses found for the specified month']);
+        }
+
+        return response()->json(['expenses' => $expenses]);
     }
 
     /**
@@ -125,4 +142,25 @@ class ExpenseController extends Controller
 
         return response()->json(['message' => 'Expense deleted successfully']);
     }
+
+    public function displayCategoryTotalExpense(Request $request){
+        $request->validate([
+            'month' => 'required|date_format:Y-m',
+            'category_id' => 'required|exists:categories,id',
+        ]);
+
+        $user = auth()->user();
+        $month = $request->input('month');
+        $category_id = $request->input('category_id');
+
+        // Get the sum of expenses for the specified month and category
+        $sum = Expense::where('user_id', $user->id)
+            ->whereYear('date', '=', substr($month, 0, 4))
+            ->whereMonth('date', '=', substr($month, 5, 2))
+            ->where('category_id', $category_id)
+            ->sum('amount');
+
+        return response()->json(['sum' => $sum ?? 0]);
+    }
+
 }
