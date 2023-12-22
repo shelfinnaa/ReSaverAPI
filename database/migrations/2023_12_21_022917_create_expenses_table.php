@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('expenses', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->decimal('amount');
+            $table->decimal('amount', 10, 2);
             $table->date('date');
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('category_id');

@@ -163,4 +163,26 @@ class ExpenseController extends Controller
         return response()->json(['sum' => $sum ?? 0]);
     }
 
+    public function getTotalExpenses(Request $request)
+    {
+        $request->validate([
+            'month' => 'required|date_format:Y-m',
+        ]);
+
+        $user = auth()->user();
+        $selectedMonth = $request->input('month');
+
+        // Get the total expense for both Category 1 and Category 2 combined within the specified month and year
+        $totalCombined = Expense::where('user_id', $user->id)
+            ->whereYear('date', '=', substr($selectedMonth, 0, 4))
+            ->whereMonth('date', '=', substr($selectedMonth, 5, 2))
+            ->whereIn('category_id', [1, 2])
+            ->sum('amount');
+
+        return response()->json([
+            'total_expenses' => $totalCombined
+        ]);
+    }
+
+
 }

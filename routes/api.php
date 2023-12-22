@@ -48,3 +48,6 @@ Route::post('displayExpense', [ExpenseController::class, 'show'])->middleware(['
 
 //analytics
 Route::post('displayCategoryTotalExpense', [ExpenseController::class, 'displayCategoryTotalExpense'])->middleware(['auth:sanctum']);
+Route::post('getTotalExpenses', [ExpenseController::class, 'getTotalExpenses'])->middleware(['auth:sanctum']);
+Route::post('getTotalExpensesAndBudgetPercentage', [ExpenseController::class, 'getTotalExpensesAndBudgetPercentage'])->middleware(['auth:sanctum']);
+
