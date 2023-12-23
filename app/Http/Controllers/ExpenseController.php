@@ -184,5 +184,35 @@ class ExpenseController extends Controller
         ]);
     }
 
+    public function getTotalExpensesAndBudgetPercentage(Request $request)
+    {
+        $request->validate([
+            'month' => 'required|date_format:Y-m',
+            'category_id' => 'required|exists:categories,id',
+        ]);
+
+        $user = auth()->user();
+        $month = $request->input('month');
+        $category_id = $request->input('category_id');
+
+        // Get the sum of expenses for the specified month and category
+        $totalExpense = Expense::where('user_id', $user->id)
+            ->whereYear('date', '=', substr($month, 0, 4))
+            ->whereMonth('date', '=', substr($month, 5, 2))
+            ->where('category_id', $category_id)
+            ->sum('amount');
+
+        // Get the user's budget for the specified category
+        $userBudget = $user->categories()->where('category_id', $category_id)->value('budget');
+
+        // Calculate the percentage spent from the budget
+        $percentageSpent = round(($userBudget > 0) ? ($totalExpense / $userBudget) * 100 : 0);
+
+        return response()->json([
+            'total_expense' => $totalExpense ?? 0,
+            'budget' => $userBudget ?? 0,
+            'percentage_spent' => $percentageSpent,
+        ]);
+    }
 
 }
