@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\AuthenticationController;
 
 /*
@@ -50,4 +51,11 @@ Route::post('displayExpense', [ExpenseController::class, 'show'])->middleware(['
 Route::post('displayCategoryTotalExpense', [ExpenseController::class, 'displayCategoryTotalExpense'])->middleware(['auth:sanctum']);
 Route::post('getTotalExpenses', [ExpenseController::class, 'getTotalExpenses'])->middleware(['auth:sanctum']);
 Route::post('getTotalExpensesAndBudgetPercentage', [ExpenseController::class, 'getTotalExpensesAndBudgetPercentage'])->middleware(['auth:sanctum']);
+
+//wishlist
+Route::post('addWishlist', [WishlistController::class, 'store'])->middleware(['auth:sanctum']);
+Route::post('updateStatusWishlist', [WishlistController::class, 'update'])->middleware(['auth:sanctum']);
+Route::delete('deleteWishlist', [WishlistController::class, 'destroy'])->middleware(['auth:sanctum']);
+Route::get('getWishlist', [WishlistController::class, 'show'])->middleware(['auth:sanctum']);
+
 
