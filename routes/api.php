@@ -34,6 +34,8 @@ Route::delete('deleteuser', [UserController::class, 'deleteUser']);
 Route::get('logout', [AuthenticationController::class, 'logout'])->middleware(['auth:sanctum']);
 Route::patch('updateuser', [UserController::class, 'updateUser'])->middleware(['auth:sanctum']);
 Route::get('logininfo', [AuthenticationController::class, 'logininfo'])->middleware(['auth:sanctum']);
+//refresh token
+
 
 //budget
 Route::post('setBudgetWants', [CategoryController::class, 'setBudgetWants'])->middleware(['auth:sanctum']);
@@ -51,6 +53,7 @@ Route::post('displayExpense', [ExpenseController::class, 'show'])->middleware(['
 Route::post('displayCategoryTotalExpense', [ExpenseController::class, 'displayCategoryTotalExpense'])->middleware(['auth:sanctum']);
 Route::post('getTotalExpenses', [ExpenseController::class, 'getTotalExpenses'])->middleware(['auth:sanctum']);
 Route::post('getTotalExpensesAndBudgetPercentage', [ExpenseController::class, 'getTotalExpensesAndBudgetPercentage'])->middleware(['auth:sanctum']);
+
 
 //wishlist
 Route::post('addWishlist', [WishlistController::class, 'store'])->middleware(['auth:sanctum']);

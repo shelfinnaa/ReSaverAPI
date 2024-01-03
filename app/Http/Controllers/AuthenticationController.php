@@ -30,7 +30,8 @@ class AuthenticationController extends Controller
             return response()->json(['error' => 'Password is wrong'], 422);
         }
 
-        return $user->createToken('user login')->plainTextToken;
+        // return $user->createToken('user login')->plainTextToken;
+        return response()->json($user->createToken('user login')->plainTextToken);
 
     }
 
