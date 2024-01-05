@@ -25,11 +25,9 @@ class AuthenticationController extends Controller
         if (!$user) {
             return response()->json(['error' => 'The email has not been registered'], 422);
         }
-
         if (!Hash::check($password, $user->password)) {
             return response()->json(['error' => 'Password is wrong'], 422);
         }
-
         // return $user->createToken('user login')->plainTextToken;
         return response()->json($user->createToken('user login')->plainTextToken);
 
