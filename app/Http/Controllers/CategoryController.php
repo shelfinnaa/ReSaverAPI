@@ -9,44 +9,53 @@ use Illuminate\Support\Facades\Auth;
 class CategoryController extends Controller
 {
     public function setBudgetWants(Request $request)
-{
-    return $this->setBudget($request, 1, 'budget_wants');
-}
-
-public function setBudgetNeeds(Request $request)
-{
-    return $this->setBudget($request, 2, 'budget_needs');
-}
-
-public function setBudgetSavings(Request $request)
-{
-    return $this->setBudget($request, 3, 'budget_savings');
-}
-
-private function setBudget(Request $request, $categoryId, $inputKey)
-{
-    $user = Auth::user();
-
-    // Validate the request data
-    $request->validate([
-        $inputKey => 'required|numeric',
-    ]);
-
-    $existingBudget = $user->categories()->find($categoryId);
-
-    if ($existingBudget) {
-        // Update the existing budget
-        $existingBudget->pivot->update(['budget' => $request->input($inputKey)]);
-        return response()->json(['message' => 'Budget updated successfully']);
-    } else {
-        // Attach a new budget for the specified category
-        $user->categories()->attach($categoryId, ['budget' => $request->input($inputKey)]);
-        return response()->json(['message' => 'Budget set successfully']);
+    {
+        return $this->setBudget($request, 1, 'budget_wants');
     }
 
+    public function setBudgetNeeds(Request $request)
+    {
+        return $this->setBudget($request, 2, 'budget_needs');
+    }
 
-}
+    public function setBudgetSavings(Request $request)
+    {
+        return $this->setBudget($request, 3, 'budget_savings');
+    }
 
+    private function setBudget(Request $request, $categoryId, $inputKey)
+    {
+        $user = Auth::user();
+
+        // Validate the request data
+        $request->validate([
+            $inputKey => 'required|numeric',
+        ]);
+
+        $existingBudget = $user->categories()->find($categoryId);
+
+        if ($existingBudget) {
+            // Update the existing budget
+            $existingBudget->pivot->update(['budget' => $request->input($inputKey)]);
+            return response()->json(['message' => 'Budget updated successfully']);
+        } else {
+            // Attach a new budget for the specified category
+            $user->categories()->attach($categoryId, ['budget' => $request->input($inputKey)]);
+            return response()->json(['message' => 'Budget set successfully']);
+        }
+
+
+    }
+
+    public function BudgetChecker(Request $request)
+    {
+        $user = Auth::user();
+        $userCategories = $user->categories;
+        if ($userCategories->isEmpty()) {
+            return response()->json(['message' => '0'], 200);
+        }
+        return response()->json($userCategories, 200);
+    }
 
     public function index()
     {

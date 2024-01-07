@@ -41,6 +41,7 @@ Route::get('logininfo', [AuthenticationController::class, 'logininfo'])->middlew
 Route::post('setBudgetWants', [CategoryController::class, 'setBudgetWants'])->middleware(['auth:sanctum']);
 Route::post('setBudgetNeeds', [CategoryController::class, 'setBudgetNeeds'])->middleware(['auth:sanctum']);
 Route::post('setBudgetSavings', [CategoryController::class, 'setBudgetSavings'])->middleware(['auth:sanctum']);
+Route::get('BudgetChecker', [CategoryController::class, 'BudgetChecker'])->middleware(['auth:sanctum']);
 Route::get('getUserBudgets', [UserController::class, 'getUserBudgets'])->middleware(['auth:sanctum']);
 
 //expense
