@@ -48,8 +48,7 @@ class User extends Authenticatable
     public function categories()
 {
     return $this->belongsToMany(Category::class, 'category_user')
-        ->withPivot('budget')
-        ->withTimestamps();
+        ->withPivot('budget');
 }
 
 public function expenses()

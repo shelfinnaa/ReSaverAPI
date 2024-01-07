@@ -74,6 +74,22 @@ class ExpenseController extends Controller
         return response()->json(['expenses' => $expenses]);
     }
 
+    public function showWithoutDate(Request $request)
+    {
+
+        $user = auth()->user();
+
+        // Fetch all expenses for the specified month
+        $expenses = Expense::where('user_id', $user->id)
+            ->get();
+
+        if ($expenses->isEmpty()) {
+            return response()->json(['message' => 'No expenses found']);
+        }
+
+        return response()->json(['expenses' => $expenses]);
+    }
+
     /**
      * Show the form for editing the specified resource.
      */

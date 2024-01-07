@@ -16,7 +16,6 @@ class Category extends Model
     public function users()
 {
     return $this->belongsToMany(User::class, 'category_user')
-        ->withPivot('budget')
-        ->withTimestamps();
+        ->withPivot('budget');
 }
 }
