@@ -21,3 +21,4 @@ class UsersSeeder extends Seeder
         ]);
     }
 }
+
