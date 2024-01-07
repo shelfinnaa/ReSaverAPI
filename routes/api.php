@@ -48,7 +48,7 @@ Route::post('addExpense', [ExpenseController::class, 'store'])->middleware(['aut
 Route::post('updateExpense', [ExpenseController::class, 'update'])->middleware(['auth:sanctum']);
 Route::delete('deleteExpense', [ExpenseController::class, 'destroy'])->middleware(['auth:sanctum']);
 Route::post('displayExpense', [ExpenseController::class, 'show'])->middleware(['auth:sanctum']);
-Route::post('displayExpenseWithoutDate', [ExpenseController::class, 'showWithoutDate'])->middleware(['auth:sanctum']);
+Route::get('displayExpenseWithoutDate', [ExpenseController::class, 'showWithoutDate'])->middleware(['auth:sanctum']);
 
 //analytics
 Route::post('displayCategoryTotalExpense', [ExpenseController::class, 'displayCategoryTotalExpense'])->middleware(['auth:sanctum']);
