@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use App\Models\Wishlist;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
@@ -29,12 +30,12 @@ class WishlistController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string',
             'price' => 'required|numeric',
-            'waiting_period' => 'required|integer|min:1|max:7', // Assuming the user can input a number between 1 and 7.
         ]);
 
         if ($validator->fails()) {
@@ -43,16 +44,10 @@ class WishlistController extends Controller
 
         $user = auth()->user();
 
-        // Get the user-specified waiting period in days
-        $userSpecifiedDays = $request->input('waiting_period');
-
-        // Calculate the waiting period from the current date
-        $waitingPeriod = Carbon::now()->addDays($userSpecifiedDays)->format('Y-m-d H:i:s');
-
         $wishlist = new Wishlist([
             'name' => $request->input('name'),
             'price' => $request->input('price'),
-            'waiting_period' => $waitingPeriod,
+            'waiting_period' => Carbon::now()->addMinute(), // Set waiting_period to 1 minute after the creation time
         ]);
 
         $user->wishlists()->save($wishlist);
@@ -60,25 +55,41 @@ class WishlistController extends Controller
         return response()->json(['wishlist' => $wishlist], 201);
     }
 
+
     /**
      * Display the specified resource.
      */
-    public function show()
-    {
 
+public function show()
+{
+    $user = auth()->user();
 
-        $user = auth()->user();
+    // Fetch all wishlists for the user
+    $wishlists = Wishlist::where('user_id', $user->id)->get();
 
-
-        // Fetch all expenses for the specified month
-        $wishlist = Wishlist::where('user_id', $user->id) ->get();
-
-        if ($wishlist->isEmpty()) {
-            return response()->json(['message' => 'No expenses found for the specified month']);
-        }
-
-        return response()->json(['wishlist' => $wishlist]);
+    if ($wishlists->isEmpty()) {
+        return response()->json(['message' => 'No wishlists found']);
     }
+
+    // Check and update unlock status based on waiting_period
+    foreach ($wishlists as $wishlist) {
+        $waitingPeriod = new Carbon($wishlist->waiting_period);
+
+        if (Carbon::now()->gt($waitingPeriod)) {
+            $wishlist->unlock = 'unlocked';
+
+            // Save the changes
+            $wishlist->save();
+
+        }
+    }
+
+    // Refresh the wishlists data after updating unlock status
+    $updatedWishlists = Wishlist::where('user_id', $user->id)->get();
+
+    return response()->json(['wishlists' => $updatedWishlists]);
+}
+
 
     /**
      * Show the form for editing the specified resource.
@@ -96,6 +107,7 @@ class WishlistController extends Controller
         // Validate the incoming request
         $validator = Validator::make($request->all(), [
             'wishlist_id' => 'required|exists:wishlists,id',
+            'bought' => 'required|string'
         ]);
 
         // If validation fails, return a JSON response with errors
@@ -105,6 +117,7 @@ class WishlistController extends Controller
 
         // Find the wishlist by ID
         $wishlist = Wishlist::find($request->input('wishlist_id'));
+        $bought= $request->input('bought');
 
         $user = auth()->user();
         if ($wishlist->user_id !== $user->id) {
@@ -113,12 +126,13 @@ class WishlistController extends Controller
 
         // Update the status to "done"
         $wishlist->status = 'done';
+        $wishlist->bought = $bought;
 
         // Save the changes
         $wishlist->save();
 
         // Return a JSON response indicating success
-        return response()->json(['message' => 'Wishlist status updated to done'], 200);
+        return response()->json(['message' => 'Wishlist status updated '], 200);
 
     }
 
@@ -126,30 +140,30 @@ class WishlistController extends Controller
      * Remove the specified resource from storage.
      */
     public function destroy(Request $request)
-{
-    $validator = Validator::make($request->all(), [
-        'id' => 'required|exists:wishlists',
-    ]);
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|exists:wishlists',
+        ]);
 
-    // If validation fails, return a JSON response with errors
-    if ($validator->fails()) {
-        return response()->json(['errors' => $validator->errors()], 422);
+        // If validation fails, return a JSON response with errors
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $id = $request->input('id');
+        // Find the wishlist by ID
+        $wishlist = Wishlist::find($id);
+        $user = auth()->user();
+
+        if ($wishlist->user_id !== $user->id) {
+            return response()->json(['error' => 'You do not have permission to delete this wishlist'], 403);
+        }
+
+        // Delete the wishlist
+        $wishlist->delete();
+
+        // Return a JSON response indicating success
+        return response()->json(['message' => 'Wishlist deleted successfully'], 200);
     }
-
-    $id = $request->input('id');
-    // Find the wishlist by ID
-    $wishlist = Wishlist::find($id);
-    $user = auth()->user();
-
-    if ($wishlist->user_id !== $user->id) {
-        return response()->json(['error' => 'You do not have permission to delete this wishlist'], 403);
-    }
-
-    // Delete the wishlist
-    $wishlist->delete();
-
-    // Return a JSON response indicating success
-    return response()->json(['message' => 'Wishlist deleted successfully'], 200);
-}
 
 }

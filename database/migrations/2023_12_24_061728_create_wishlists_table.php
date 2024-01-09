@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('name');
             $table->decimal('price', 10, 2);
             $table->string('status')->default('ongoing');
+            $table->string('unlock')->default('locked');
+            $table->string('bought')->default('no');
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
