@@ -206,36 +206,130 @@ class ExpenseController extends Controller
 }
 
 
-    public function getTotalExpensesAndBudgetPercentage(Request $request)
-    {
-        $request->validate([
-            'month' => 'required|date_format:Y-m',
-            'category_id' => 'required|exists:categories,id',
-        ]);
+public function getNeedsBudgetInsight()
+{
+    $defaultCategoryId = 1;
 
-        $user = auth()->user();
-        $month = $request->input('month');
-        $category_id = $request->input('category_id');
+    $user = auth()->user();
 
-        // Get the sum of expenses for the specified month and category
-        $totalExpense = Expense::where('user_id', $user->id)
-            ->whereYear('date', '=', substr($month, 0, 4))
-            ->whereMonth('date', '=', substr($month, 5, 2))
-            ->where('category_id', $category_id)
-            ->sum('amount');
+    // Use the current date as the reference
+    $currentDate = now();
 
-        // Get the user's budget for the specified category
-        $userBudget = $user->categories()->where('category_id', $category_id)->value('budget');
+    // Get the sum of expenses for the current month and category
+    $totalExpense = Expense::where('user_id', $user->id)
+        ->whereYear('date', '=', $currentDate->year)
+        ->whereMonth('date', '=', $currentDate->month)
+        ->where('category_id', $defaultCategoryId)
+        ->sum('amount');
 
-        // Calculate the percentage spent from the budget
-        $percentageSpent = round(($userBudget > 0) ? ($totalExpense / $userBudget) * 100 : 0);
+    // Get the user's budget for the specified category
+    $userBudget = $user->categories()->where('category_id', $defaultCategoryId)->value('budget');
 
-        return response()->json([
-            'total_expense' => $totalExpense ?? 0,
-            'budget' => $userBudget ?? 0,
-            'percentage_spent' => $percentageSpent,
-        ]);
+    // Calculate the percentage spent from the budget
+    $percentageSpent = round(($userBudget > 0) ? ($totalExpense / $userBudget) * 100 : 0);
+
+    // Calculate the remaining budget if the percentage is below 100%
+    $remainingBudget = ($percentageSpent < 100) ? ($userBudget - $totalExpense) : 0;
+
+    // Build the string messages based on the percentage spent and remaining budget
+    $percentageMessage = 'Needs : ' . $percentageSpent . '% of Budget Used';
+
+    if ($percentageSpent < 100) {
+        $remainingMessage = ($remainingBudget > 0) ? 'Rp ' . number_format($remainingBudget) . ' remaining' : '';
+    } else {
+        $overLimit = $userBudget - $totalExpense;
+        $remainingMessage = 'Overlimit by Rp ' . number_format($overLimit);
     }
+
+    return response()->json([
+        'percentage_message' => $percentageMessage,
+        'remaining_message' => $remainingMessage,
+    ]);
+}
+
+public function getWantsBudgetInsight()
+{
+    $defaultCategoryId = 2;
+
+    $user = auth()->user();
+
+    // Use the current date as the reference
+    $currentDate = now();
+
+    // Get the sum of expenses for the current month and category
+    $totalExpense = Expense::where('user_id', $user->id)
+        ->whereYear('date', '=', $currentDate->year)
+        ->whereMonth('date', '=', $currentDate->month)
+        ->where('category_id', $defaultCategoryId)
+        ->sum('amount');
+
+    // Get the user's budget for the specified category
+    $userBudget = $user->categories()->where('category_id', $defaultCategoryId)->value('budget');
+
+    // Calculate the percentage spent from the budget
+    $percentageSpent = round(($userBudget > 0) ? ($totalExpense / $userBudget) * 100 : 0);
+
+    // Calculate the remaining budget if the percentage is below 100%
+    $remainingBudget = ($percentageSpent < 100) ? ($userBudget - $totalExpense) : 0;
+
+    // Build the string messages based on the percentage spent and remaining budget
+    $percentageMessage = 'Wants : ' . $percentageSpent . '% of Budget Used';
+
+    if ($percentageSpent < 100) {
+        $remainingMessage = ($remainingBudget > 0) ? 'Rp ' . number_format($remainingBudget) . ' remaining' : '';
+    } else {
+        $overLimit = $userBudget - $totalExpense;
+        $remainingMessage = 'Overlimit by Rp ' . number_format($overLimit);
+    }
+
+    return response()->json([
+        'percentage_message' => $percentageMessage,
+        'remaining_message' => $remainingMessage,
+    ]);
+}
+
+public function getSavingsBudgetInsight()
+{
+    $defaultCategoryId = 3;
+
+    $user = auth()->user();
+
+    // Use the current date as the reference
+    $currentDate = now();
+
+    // Get the sum of expenses for the current month and category
+    $totalExpense = Expense::where('user_id', $user->id)
+        ->whereYear('date', '=', $currentDate->year)
+        ->whereMonth('date', '=', $currentDate->month)
+        ->where('category_id', $defaultCategoryId)
+        ->sum('amount');
+
+    // Get the user's budget for the specified category
+    $userBudget = $user->categories()->where('category_id', $defaultCategoryId)->value('budget');
+
+    // Calculate the percentage spent from the budget
+    $percentageSpent = round(($userBudget > 0) ? ($totalExpense / $userBudget) * 100 : 0);
+
+    // Calculate the remaining budget if the percentage is below 100%
+    $remainingBudget = ($percentageSpent < 100) ? ($userBudget - $totalExpense) : 0;
+
+    // Build the string messages based on the percentage spent and remaining budget
+    $percentageMessage = 'Savings : ' . $percentageSpent . '% of Budget Saved';
+
+    if ($percentageSpent < 100) {
+        $remainingMessage = ($remainingBudget > 0) ? 'Rp ' . number_format($remainingBudget) . ' remaining' : '';
+    } else {
+        $overLimit = $userBudget - $totalExpense;
+        $remainingMessage = 'You Saved Rp ' . number_format($totalExpense);
+    }
+
+    return response()->json([
+        'percentage_message' => $percentageMessage,
+        'remaining_message' => $remainingMessage,
+    ]);
+}
+
+
 
     public function getTotalExpensesPercentage1()
 {

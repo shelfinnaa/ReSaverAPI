@@ -55,7 +55,9 @@ Route::get('displayExpenseWithoutDate', [ExpenseController::class, 'showWithoutD
 //analytics
 Route::post('displayCategoryTotalExpense', [ExpenseController::class, 'displayCategoryTotalExpense'])->middleware(['auth:sanctum']);
 Route::get('getTotalExpenses', [ExpenseController::class, 'getTotalExpenses'])->middleware(['auth:sanctum']);
-Route::post('getTotalExpensesAndBudgetPercentage', [ExpenseController::class, 'getTotalExpensesAndBudgetPercentage'])->middleware(['auth:sanctum']);
+Route::get('getNeedsBudgetInsight', [ExpenseController::class, 'getNeedsBudgetInsight'])->middleware(['auth:sanctum']);
+Route::get('getWantsBudgetInsight', [ExpenseController::class, 'getWantsBudgetInsight'])->middleware(['auth:sanctum']);
+Route::get('getSavingsBudgetInsight', [ExpenseController::class, 'getSavingsBudgetInsight'])->middleware(['auth:sanctum']);
 Route::get('getTotalExpensesPercentage1', [ExpenseController::class, 'getTotalExpensesPercentage1'])->middleware(['auth:sanctum']);
 Route::get('getTotalExpensesPercentage2', [ExpenseController::class, 'getTotalExpensesPercentage2'])->middleware(['auth:sanctum']);
 Route::get('getTotalExpensesPercentage3', [ExpenseController::class, 'getTotalExpensesPercentage3'])->middleware(['auth:sanctum']);
