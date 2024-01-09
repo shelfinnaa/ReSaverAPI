@@ -179,7 +179,7 @@ class ExpenseController extends Controller
         return response()->json(['sum' => $sum ?? 0]);
     }
 
-    public function getTotalExpenses(Request $request)
+    public function getTotalExpenses()
 {
     $user = auth()->user();
 
