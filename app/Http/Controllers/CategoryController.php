@@ -109,4 +109,38 @@ class CategoryController extends Controller
     {
         //
     }
+
+    public function setBudgetSekaligus(Request $request)
+{
+    $user = Auth::user();
+
+    // Validate the request data
+    $request->validate([
+        'budget_wants' => 'required|numeric',
+        'budget_needs' => 'required|numeric',
+        'budget_savings' => 'required|numeric',
+    ]);
+
+    $budgets = [
+        1 => ['category_id' => 1, 'input_key' => 'budget_wants'],
+        2 => ['category_id' => 2, 'input_key' => 'budget_needs'],
+        3 => ['category_id' => 3, 'input_key' => 'budget_savings'],
+    ];
+
+    foreach ($budgets as $categoryId => $budgetData) {
+        $existingBudget = $user->categories()->find($budgetData['category_id']);
+
+        if ($existingBudget) {
+            // Update the existing budget
+            $existingBudget->pivot->update(['budget' => $request->input($budgetData['input_key'])]);
+        } else {
+            // Attach a new budget for the specified category
+            $user->categories()->attach($budgetData['category_id'], ['budget' => $request->input($budgetData['input_key'])]);
+        }
+    }
+
+    return response()->json(['message' => 'Budgets set/updated successfully']);
 }
+
+}
+

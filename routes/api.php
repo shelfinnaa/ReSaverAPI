@@ -41,6 +41,7 @@ Route::get('logininfo', [AuthenticationController::class, 'logininfo'])->middlew
 Route::post('setBudgetWants', [CategoryController::class, 'setBudgetWants'])->middleware(['auth:sanctum']);
 Route::post('setBudgetNeeds', [CategoryController::class, 'setBudgetNeeds'])->middleware(['auth:sanctum']);
 Route::post('setBudgetSavings', [CategoryController::class, 'setBudgetSavings'])->middleware(['auth:sanctum']);
+Route::post('setBudgetSekaligus', [CategoryController::class, 'setBudgetSekaligus'])->middleware(['auth:sanctum']);
 Route::get('BudgetChecker', [CategoryController::class, 'BudgetChecker'])->middleware(['auth:sanctum']);
 Route::get('getUserBudgets', [UserController::class, 'getUserBudgets'])->middleware(['auth:sanctum']);
 
@@ -56,6 +57,8 @@ Route::post('displayCategoryTotalExpense', [ExpenseController::class, 'displayCa
 Route::get('getTotalExpenses', [ExpenseController::class, 'getTotalExpenses'])->middleware(['auth:sanctum']);
 Route::post('getTotalExpensesAndBudgetPercentage', [ExpenseController::class, 'getTotalExpensesAndBudgetPercentage'])->middleware(['auth:sanctum']);
 Route::get('getTotalExpensesPercentage1', [ExpenseController::class, 'getTotalExpensesPercentage1'])->middleware(['auth:sanctum']);
+Route::get('getTotalExpensesPercentage2', [ExpenseController::class, 'getTotalExpensesPercentage2'])->middleware(['auth:sanctum']);
+Route::get('getTotalExpensesPercentage3', [ExpenseController::class, 'getTotalExpensesPercentage3'])->middleware(['auth:sanctum']);
 
 
 //wishlist
