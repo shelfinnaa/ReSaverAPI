@@ -14,7 +14,7 @@ return [
     */
 
     'defaults' => [
-        'guard' => 'api',
+        'guard' => 'webpos',
         'passwords' => 'users',
     ],
 
@@ -40,14 +40,7 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
-
-        'api' => [
-            'driver' => 'token',
-            'provider' => 'users',
-            'hash' => false,
-        ],
     ],
-
 
     /*
     |--------------------------------------------------------------------------
