@@ -237,25 +237,21 @@ class ExpenseController extends Controller
         ]);
     }
 
-    public function getTotalExpensesPercentage(Request $request)
+    public function getTotalExpensesPercentage1()
 {
-    $request->validate([
-        'category_id' => 'required|exists:categories,id',
-    ]);
-
     $user = auth()->user();
 
     // Automatically set the month to the current month
     $currentDate = now();
     $month = $currentDate->format('Y-m');
 
-    $category_id = $request->input('category_id');
+    $category_id = 1; // Set the category_id to 1
 
     // Get the total expense for the current month and specified category
     $totalExpense = Expense::where('user_id', $user->id)
         ->whereYear('date', '=', $currentDate->year)
         ->whereMonth('date', '=', $currentDate->month)
-        ->whereIn('category_id', [$category_id]) // Changed to an array for flexibility
+        ->whereIn('category_id', [$category_id])
         ->sum('amount');
 
     // Get the total expense for all categories in the current month
@@ -277,6 +273,7 @@ class ExpenseController extends Controller
         'selected_month' => $month, // Optionally return the selected month
     ]);
 }
+
 
 
 }
