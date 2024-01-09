@@ -180,25 +180,31 @@ class ExpenseController extends Controller
     }
 
     public function getTotalExpenses(Request $request)
-    {
-        $request->validate([
-            'month' => 'required|date_format:Y-m',
-        ]);
+{
+    $user = auth()->user();
 
-        $user = auth()->user();
-        $selectedMonth = $request->input('month');
+    // Automatically set the month and year to the current month and year
+    $currentDate = now();
+    $selectedMonth = $currentDate->format('Y-m');
 
-        // Get the total expense for both Category 1 and Category 2 combined within the specified month and year
-        $totalCombined = Expense::where('user_id', $user->id)
-            ->whereYear('date', '=', substr($selectedMonth, 0, 4))
-            ->whereMonth('date', '=', substr($selectedMonth, 5, 2))
-            ->whereIn('category_id', [1, 2])
-            ->sum('amount');
+    // You can still validate the incoming request if needed
+    // $request->validate([
+    //     'month' => 'required|date_format:Y-m',
+    // ]);
 
-        return response()->json([
-            'total_expenses' => $totalCombined
-        ]);
-    }
+    // Get the total expense for both Category 1 and Category 2 combined within the specified month and year
+    $totalCombined = Expense::where('user_id', $user->id)
+        ->whereYear('date', '=', $currentDate->year)
+        ->whereMonth('date', '=', $currentDate->month)
+        ->whereIn('category_id', [1, 2])
+        ->sum('amount');
+
+    return response()->json([
+        'total_expenses' => $totalCombined,
+        'selected_month' => $selectedMonth // Optionally return the selected month
+    ]);
+}
+
 
     public function getTotalExpensesAndBudgetPercentage(Request $request)
     {
