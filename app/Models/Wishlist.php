@@ -14,6 +14,8 @@ class Wishlist extends Model
         'name',
         'price',
         'waiting_period',
+        'unlock',
+        'status',
     ];
 
     public function user()
