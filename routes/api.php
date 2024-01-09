@@ -55,6 +55,7 @@ Route::get('displayExpenseWithoutDate', [ExpenseController::class, 'showWithoutD
 Route::post('displayCategoryTotalExpense', [ExpenseController::class, 'displayCategoryTotalExpense'])->middleware(['auth:sanctum']);
 Route::post('getTotalExpenses', [ExpenseController::class, 'getTotalExpenses'])->middleware(['auth:sanctum']);
 Route::post('getTotalExpensesAndBudgetPercentage', [ExpenseController::class, 'getTotalExpensesAndBudgetPercentage'])->middleware(['auth:sanctum']);
+Route::post('getTotalExpensesPercentage', [ExpenseController::class, 'getTotalExpensesPercentage'])->middleware(['auth:sanctum']);
 
 
 //wishlist
